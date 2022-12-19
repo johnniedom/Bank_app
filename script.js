@@ -2,7 +2,7 @@
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
-// BANKIST APP
+// BANK APP
 
 // Data
 const account1 = {
@@ -32,8 +32,14 @@ const account4 = {
   interestRate: 1,
   pin: 4444,
 };
+const account5 = {
+  owner: 'Johnnie Modebe Chukwudi',
+  movements: [430, 1000, 700, 50, 90, 5000, 3400, 1150, -790],
+  interestRate: 1.5,
+  pin: 5555,
+};
 
-const accounts = [account1, account2, account3, account4];
+const accounts = [account1, account2, account3, account4, account5];
 
 // Elements
 const labelWelcome = document.querySelector('.welcome');
@@ -81,6 +87,39 @@ const display = function (movement) {
   });
 };
 display(account1.movements);
+
+// Computing user Name
+const user = `Johnnie Modebe Chukwudi`.toLowerCase().split(` `);
+// console.log(user);
+const userName = user.map(us => us.slice(0, 1));
+// console.log(userName);
+const calPrintBalance = function (movements) {
+  const balance = movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = balance;
+};
+calPrintBalance(account1.movements);
+// console.log(userName.join(``));
+// 👆🏽 this on a function
+const createUserName = function (acct) {
+  acct.forEach(function (acc) {
+    // console.log(acc.owner);
+    acc.userName = acc.owner
+      .toLowerCase()
+      .split(` `)
+      .map(us => us[0])
+      .join(``);
+  });
+};
+createUserName(accounts);
+// console.log(createUserName(accounts));
+/*
+const createUserName = function (userName) {
+  return userName
+    .toLowerCase()
+    .split(` `)
+    .map(us => us[0])
+    .join(``);
+};*/
 
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
@@ -155,10 +194,10 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 movements.forEach(function (movement, index, arr) {
   const statement = movement > 0 ? `You deposited` : `You withdraw`;
   if (movement > 0) {
-    console.log(statement, movement, 'Number', index + 1);
+    // console.log(statement, movement, 'Number', index + 1);
   } else {
-    console.log(statement, Math.abs(movement), 'Number', index + 1);
-    console.log(`or even the array ${arr}`);
+    // console.log(statement, Math.abs(movement), 'Number', index + 1);
+    // console.log(`or even the array ${arr}`);
   }
 });
 
@@ -170,13 +209,13 @@ const currencies = new Map([
   ['GBP', 'Pound sterling'],
 ]);
 currencies.forEach(function (value, key, map) {
-  console.log(`${key}: ${value}`);
+  // console.log(`${key}: ${value}`);
 });
 
 // On Sets
 const uniqueCurrencies = new Set([`USD`, `NGA`, `USD`, `EUR`, `PUN`, `NGA`]);
 uniqueCurrencies.forEach(function (value, key, set) {
-  console.log(`${key}: ${value}`);
+  // console.log(`${key}: ${value}`);
 });
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
@@ -217,3 +256,98 @@ const checkDogs = function (dogsJulia, dogsKate) {
 };
 // checkDogs([3, 5, 2, 12, 7], [4, 1, 15, 8, 3]);
 // checkDogs([9, 16, 6, 8, 3],  [10, 5, 6, 1, 4]);
+
+// TOPIC DATA TRANSFORMATION
+// (MAP, FILTER, REDUCE)
+//👉🏽 MAP
+// they can also be used to loop over array just like for
+// but they return a new array after the iteration
+
+const euros = [200, 450, -400, 3000, -650, -130, 70, 1300];
+// using the Method example
+const rate = 1.6;
+const eurToUsd = euros.map(function (usd, i) {
+  const converter = usd * rate;
+  return converter;
+});
+// console.log(eurToUsd);
+
+// small CHALLENGE 😂 (TURN THIS 👆🏽 TO ARROW FUNCTION).
+const euroToUSD = euros.map(euro => euro * rate);
+// console.log(euroToUSD);
+
+const alert = euros.map(
+  (mov, i, arr) =>
+    `Move ${i + 1}: You ${mov > 0 ? `deposited` : `You withdraw`} ${Math.abs(
+      mov
+    )}`
+);
+
+// console.log(...alert);
+// TOPIC FILTER
+const deposits = euros.filter(mon => mon > 0);
+// console.log(deposits);
+// Using the (For of) to do the same thing
+const depositsFor = [];
+for (const euro of euros) {
+  if (euro > 0) depositsFor.push(euro);
+}
+//  console.log(depositsFor);
+// arrays of withdrawals
+const withdrawals = euros.filter(mon => mon < 0);
+// console.log(withdrawals);
+
+// TOPIC Reduce Methods
+//[N/B] The first parameter in the reduce method is the Accumulator
+// the last element separated by a comma is the initial value of the accumulator
+const balance = euros.reduce(function (acc, value, index, arrays) {
+  return acc + value;
+}, 0);
+// console.log(balance);
+// Highest max value of an array using the the Reduces method
+const maxValue = euros.reduce((acc, euro) => (acc > euro ? acc : euro));
+// console.log(maxValue);
+
+/*
+CHALLENGE #2
+Let's go back to Julia and Kate's study about dogs. This time, they want to convert
+dog ages to human ages and calculate the average age of the dogs in their study.
+Your tasks:
+Create a function 'calcAverageHumanAge', which accepts an arrays of dog's
+ages ('ages'), and does the following things in order:
+1. Calculate the dog age in human years using the following formula: if the dog is
+<= 2 years old, humanAge = 2 * dogAge. If the dog is > 2 years old,
+humanAge = 16 + dogAge * 4
+2. Exclude all dogs that are less than 18 human years old (which is the same as
+keeping dogs that are at least 18 years old)
+3. Calculate the average human age of all adult dogs (you should already know
+from other challenges how we calculate averages 😉)
+4. Run the function for both test datasets
+Test data:
+§ Data 1: [5, 2, 4, 1, 15, 8, 3]
+§ Data 2: [16, 6, 10, 5, 6, 1, 4]
+GOOD LUCK 😀
+*/
+const calcAverageHumanAge = function (ages) {
+  ages
+    .map(function (age, i) {
+      return age > 2 ? 16 + age * 4 : age ** 2;
+    })
+    .filter(adult => adult > 18)
+    // .reduce((acc, age) => (acc + age) / age.length, 0);
+};
+console.log(calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]));
+
+const tester = [5, 2, 4, 1, 15, 8, 3];
+const testerTest = tester
+  .map(function (test) {
+    if (test > 2) {
+      return 16 + test * 4;
+    } else {
+      return test ** 2;
+    }
+  })
+  .filter(adult => adult > 18)
+  .reduce((acc, age) => (acc + age), 0);
+console.log(testerTest);
+console.log(tester.length);
