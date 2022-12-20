@@ -328,15 +328,15 @@ Test data:
 § Data 2: [16, 6, 10, 5, 6, 1, 4]
 GOOD LUCK 😀
 */
-const calcAverageHumanAge = function (ages) {
-  ages
-    .map(function (age, i) {
-      return age > 2 ? 16 + age * 4 : age ** 2;
-    })
-    .filter(adult => adult > 18)
-    // .reduce((acc, age) => (acc + age) / age.length, 0);
-};
-console.log(calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]));
+// const calcAverageHumanAge = function (ages) {
+//   ages
+//     .map(function (age, i) {
+//       return age > 2 ? 16 + age * 4 : age ** 2;
+//     })
+//     .filter(adult => adult > 18)
+//     // .reduce((acc, age) => (acc + age) / age.length, 0);
+// };
+// console.log(calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]));
 
 const tester = [5, 2, 4, 1, 15, 8, 3];
 const testerTest = tester
@@ -351,3 +351,5 @@ const testerTest = tester
   .reduce((acc, age) => (acc + age), 0);
 console.log(testerTest);
 console.log(tester.length);
+
+
