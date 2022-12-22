@@ -97,8 +97,7 @@ const calPrintBalance = function (movements) {
   const balance = movements.reduce((acc, mov) => acc + mov, 0);
   labelBalance.textContent = balance;
 };
-calPrintBalance(account1.movements);
-// console.log(userName.join(``));
+
 // 👆🏽 this on a function
 const createUserName = function (acct) {
   acct.forEach(function (acc) {
@@ -111,6 +110,22 @@ const createUserName = function (acct) {
   });
 };
 createUserName(accounts);
+calPrintBalance(account1.movements);
+
+// TOPIC power of chaining
+const calDisplayBalance = function (movements) {
+  const depositSummary = movements
+    .filter(money => money > 0)
+    .reduce((acc, money) => acc + money, 0);
+  labelSumIn.textContent = `${depositSummary}💲`;
+
+  const creditsSummary = movements
+    .filter(money => money < 0)
+    .reduce((acc, money) => acc + money, 0);
+    labelSumOut.textContent = `${Math.abs(creditsSummary)}💲`;
+};
+calDisplayBalance(account1.movements);
+
 // console.log(createUserName(accounts));
 /*
 const createUserName = function (userName) {
@@ -328,16 +343,30 @@ Test data:
 § Data 2: [16, 6, 10, 5, 6, 1, 4]
 GOOD LUCK 😀
 */
-// const calcAverageHumanAge = function (ages) {
-//   ages
-//     .map(function (age, i) {
-//       return age > 2 ? 16 + age * 4 : age ** 2;
-//     })
-//     .filter(adult => adult > 18)
-//     // .reduce((acc, age) => (acc + age) / age.length, 0);
-// };
-// console.log(calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]));
+const calcAverageHumanAgeAndAvg = ages => {
+  const arrayOfAge = ages.map(function (age, i, arr) {
+    if (age > 2) {
+      // console.log(16 + age * 4);
+      return 16 + age * 4;
+    } else {
+      // console.log(age ** 2);
+      return age ** 2;
+    }
+  });
+  const filter = arrayOfAge.filter(adult => adult >= 18);
+  const reducers = filter.reduce(
+    (acc, age, i, arr) => acc + age / arr.length,
+    0
+  );
+  return reducers;
+};
+const avg1 = calcAverageHumanAgeAndAvg([5, 2, 4, 1, 15, 8, 3]);
+const avg2 = calcAverageHumanAgeAndAvg([16, 6, 10, 5, 6, 1, 4]);
+console.log(avg1, avg2);
 
+// console.log(tester.length);
+
+// TOPIC CHAINING OF METHODS
 const tester = [5, 2, 4, 1, 15, 8, 3];
 const testerTest = tester
   .map(function (test) {
@@ -348,8 +377,6 @@ const testerTest = tester
     }
   })
   .filter(adult => adult > 18)
-  .reduce((acc, age) => (acc + age), 0);
-console.log(testerTest);
-console.log(tester.length);
-
-
+  .reduce((acc, age, i, arr) => acc + age / arr.length, 0);
+// console.log(testerTest);
+// console.log(tester.length);
