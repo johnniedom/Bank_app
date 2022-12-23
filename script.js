@@ -34,7 +34,7 @@ const account4 = {
 };
 const account5 = {
   owner: 'Johnnie Modebe Chukwudi',
-  movements: [430, 1000, 700, 50, 90, 5000, 3400, 1150, -790],
+  movements: [1000, 700, 50, -900, 7000, 7400, -790, -300],
   interestRate: 1.5,
   pin: 5555,
 };
@@ -86,16 +86,16 @@ const display = function (movement) {
     containerMovements.insertAdjacentHTML(`afterbegin`, html);
   });
 };
-display(account1.movements);
 
 // Computing user Name
 const user = `Johnnie Modebe Chukwudi`.toLowerCase().split(` `);
 // console.log(user);
 const userName = user.map(us => us.slice(0, 1));
+
 // console.log(userName);
-const calPrintBalance = function (movements) {
-  const balance = movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = balance;
+const calPrintBalance = function (acc) {
+  acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${acc.balance}€`;
 };
 
 // 👆🏽 this on a function
@@ -110,21 +110,27 @@ const createUserName = function (acct) {
   });
 };
 createUserName(accounts);
-calPrintBalance(account1.movements);
 
 // TOPIC power of chaining
-const calDisplayBalance = function (movements) {
-  const depositSummary = movements
+const calDisplayBalance = function (acc) {
+  const depositSummary = acc.movements
     .filter(money => money > 0)
     .reduce((acc, money) => acc + money, 0);
-  labelSumIn.textContent = `${depositSummary}💲`;
-
-  const creditsSummary = movements
+  labelSumIn.textContent = `${depositSummary}€`;
+  console.log(acc);
+  const creditsSummary = acc.movements
     .filter(money => money < 0)
     .reduce((acc, money) => acc + money, 0);
-    labelSumOut.textContent = `${Math.abs(creditsSummary)}💲`;
+  labelSumOut.textContent = `${Math.abs(creditsSummary)}€`;
+
+  const interest = acc.movements
+    .filter(money => money > 0)
+    .map(money => Math.trunc((money * acc.interestRate) / 100))
+    .filter(interest => interest > 1)
+    .reduce((acc, money, i, arr) => acc + money, 0);
+  labelSumInterest.textContent = `${interest}€`;
+  // console.log(interest, acc.movements);
 };
-calDisplayBalance(account1.movements);
 
 // console.log(createUserName(accounts));
 /*
@@ -134,16 +140,81 @@ const createUserName = function (userName) {
     .split(` `)
     .map(us => us[0])
     .join(``);
-};*/
+};
+*/
+// console.log(accounts);
+const updateUI = function (currentAccount) {
+  //Display balance
+  calPrintBalance(currentAccount);
+  //Display movements
+  display(currentAccount.movements);
+  // Display summary
+  calDisplayBalance(currentAccount);
+};
 
-/////////////////////////////////////////////////
+//Event Handler
+let currentAccount;
+btnLogin.addEventListener(`click`, function (e) {
+  e.preventDefault();
+  currentAccount = accounts.find(
+    (acc, i, arr) => acc.userName === inputLoginUsername.value
+  );
+  console.log(currentAccount);
+  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+    // LOGIN IN AND PIN
+    inputLoginUsername.value = inputLoginPin.value = ``;
+    inputLoginPin.blur();
+    // Display UI and a Welcome message
+    labelWelcome.textContent = `welcome back ${
+      currentAccount.owner.split(` `)[0]
+    }`;
+    containerApp.style.opacity = 100;
+  }
+  updateUI(currentAccount);
+});
+
+console.log(currentAccount);
+
+//TOPIC implementing transfers
+btnTransfer.addEventListener(`click`, function (e) {
+  e.preventDefault();
+  const amountTransferred = Number(inputTransferAmount.value);
+  const receiverAcct = accounts.find(
+    acc => acc.userName === inputTransferTo.value
+  );
+  console.log(amountTransferred, receiverAcct?.userName, receiverAcct);
+  inputTransferAmount.value = inputTransferTo.value = ``;
+
+  if (
+    amountTransferred > 0 &&
+    receiverAcct &&
+    currentAccount.balance >= amountTransferred &&
+    receiverAcct?.userName !== currentAccount.userName
+  ) {
+    // console.log(`login`);
+    currentAccount.movements.push(-amountTransferred);
+    receiverAcct.movements.push(amountTransferred);
+    updateUI(currentAccount);
+  }
+});
+// btnClose.addEventListener(`click`, function(e){
+//   e.preventDefault();
+//   const receiverAcct = accounts.find(
+//     acc => acc.userName === inputTransferTo.value
+//   );
+//   if(currentAccount.userName === inputCloseUsername && currentAccount.pin === inputClosePin){
+//     console.log(`logout`);
+//   }
+// })
+//////////////////////////
+///////////////////////
 /////////////////////////////////////////////////
 // LECTURES
 
 // const currencies = new Map([
 //   ['USD', 'United States dollar'],
 //   ['EUR', 'Euro'],
-//   ['GBP', 'Pound sterling'],
+//   ['GBP', 'Pound sterling'], 
 // ]);
 
 // const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
@@ -362,7 +433,7 @@ const calcAverageHumanAgeAndAvg = ages => {
 };
 const avg1 = calcAverageHumanAgeAndAvg([5, 2, 4, 1, 15, 8, 3]);
 const avg2 = calcAverageHumanAgeAndAvg([16, 6, 10, 5, 6, 1, 4]);
-console.log(avg1, avg2);
+// console.log(avg1, avg2);
 
 // console.log(tester.length);
 
@@ -380,3 +451,34 @@ const testerTest = tester
   .reduce((acc, age, i, arr) => acc + age / arr.length, 0);
 // console.log(testerTest);
 // console.log(tester.length);
+/*
+CHALLENGE 3
+Rewrite the 'calcAverageHumanAge' function from Challenge #2, but this time
+as an arrow function, and using chaining!
+Test data:
+§ Data 1: [5, 2, 4, 1, 15, 8, 3]
+§ Data 2: [16, 6, 10, 5, 6, 1, 4]
+ */
+const calcAverageHumanAge = age =>
+  age
+    .map((age, i, arr) => (age >= 2 ? 16 + age * 4 : age ** 2))
+    .filter((age, i, arr) => age > 18)
+    .reduce((acc, age, i, arr) => acc + age / arr.length, 0);
+
+const tAVg = calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]);
+const tAVg2 = calcAverageHumanAge([16, 6, 10, 5, 6, 1, 4]);
+// console.log(tAVg, tAVg2);
+
+// TOPIC THE FIND METHOD
+const firstWithdrawal = movements.find(mov => mov < 0);
+// console.log(firstWithdrawal);
+
+const account = accounts.find(acc => acc.owner === `Johnnie Modebe Chukwudi`);
+// CHALLENGE Doing the same thing with the (For loop)
+let accOwner = ``;
+for (const account of accounts) {
+  if (account.owner === `Johnnie Modebe Chukwudi`) {
+    // accOwner + account.owner/
+    // console.log( account, account.owner);
+  }
+}
