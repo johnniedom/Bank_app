@@ -67,19 +67,20 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-const display = function (movement) {
+const display = function (movement, sort = false) {
   // clearing the html default or already written text 👇🏽
   containerMovements.innerHTML = ``; // this how it is done👈🏼
   // the .textContent only returns the contents its self
   //  while the innerHTML return very thing including the html and also read Data
-  movement.forEach(function (mov, i) {
+  const mov = sort ? movement.slice().sort((a, b) => a - b) : movement;
+  mov.forEach(function (mov, i) {
     const state = mov > 0 ? `deposit` : `withdrawal`;
     const html = `
       <div class="movements__row">
         <div class="movements__type movements__type--${state}">${
       i + 1
     } ${state}</div>
-        <div class="movements__value">${mov}</div>
+        <div class="movements__value">${mov}€</div>
       </div>
       `;
     // inset the code into the html using this 👇🏽
@@ -117,7 +118,7 @@ const calDisplayBalance = function (acc) {
     .filter(money => money > 0)
     .reduce((acc, money) => acc + money, 0);
   labelSumIn.textContent = `${depositSummary}€`;
-  console.log(acc);
+  // console.log(acc);
   const creditsSummary = acc.movements
     .filter(money => money < 0)
     .reduce((acc, money) => acc + money, 0);
@@ -146,6 +147,7 @@ const createUserName = function (userName) {
 const updateUI = function (currentAccount) {
   //Display balance
   calPrintBalance(currentAccount);
+  console.log(currentAccount);
   //Display movements
   display(currentAccount.movements);
   // Display summary
@@ -173,9 +175,8 @@ btnLogin.addEventListener(`click`, function (e) {
   updateUI(currentAccount);
 });
 
-console.log(currentAccount);
-
 //TOPIC implementing transfers
+
 btnTransfer.addEventListener(`click`, function (e) {
   e.preventDefault();
   const amountTransferred = Number(inputTransferAmount.value);
@@ -197,15 +198,52 @@ btnTransfer.addEventListener(`click`, function (e) {
     updateUI(currentAccount);
   }
 });
-// btnClose.addEventListener(`click`, function(e){
-//   e.preventDefault();
-//   const receiverAcct = accounts.find(
-//     acc => acc.userName === inputTransferTo.value
-//   );
-//   if(currentAccount.userName === inputCloseUsername && currentAccount.pin === inputClosePin){
-//     console.log(`logout`);
-//   }
-// })
+// TOPIC some() Method
+// Request a loan
+// the Bank only Grant a loan to an individual a deposit of at least
+// 10% of the requested loan amount
+btnLoan.addEventListener(`click`, function (e) {
+  e.preventDefault();
+  const amount = Number(inputLoanAmount.value);
+  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
+    // console.log(`walker`);
+    // proceed loan
+    currentAccount.movements.push(amount);
+    // update ui
+    updateUI(currentAccount);
+  }
+  inputLoanAmount.value = ``;
+});
+
+btnClose.addEventListener(`click`, function (e) {
+  e.preventDefault();
+  // console.log(currentAccount.userName);
+  if (
+    currentAccount.userName === inputCloseUsername.value &&
+    currentAccount.pin === Number(inputClosePin.value)
+  ) {
+    console.log(`logout`);
+    const index = accounts.findIndex(
+      acc => acc.userName === currentAccount.userName
+    );
+    console.log(index);
+    // DELETE THE ACCOUNT
+    // accounts.splice(index, 1);
+    accounts.splice(index, 1);
+    // HIDE USER INTERFACE
+    containerApp.style.opacity = 0;
+    console.log(accounts);
+  }
+  inputCloseUsername.value = inputClosePin.value = ``;
+});
+
+let sorted = false;
+btnSort.addEventListener(`click`, function (e) {
+  e.preventDefault();
+  display(currentAccount.movements, !sorted);
+  sorted = !sorted;
+  // console.log(currentAccount.movements);
+});
 //////////////////////////
 ///////////////////////
 /////////////////////////////////////////////////
@@ -214,7 +252,7 @@ btnTransfer.addEventListener(`click`, function (e) {
 // const currencies = new Map([
 //   ['USD', 'United States dollar'],
 //   ['EUR', 'Euro'],
-//   ['GBP', 'Pound sterling'], 
+//   ['GBP', 'Pound sterling'],
 // ]);
 
 // const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
@@ -482,3 +520,169 @@ for (const account of accounts) {
     // console.log( account, account.owner);
   }
 }
+
+// TOPIC The every Method
+// the every method is similar to the some method
+//  console.log(movements.every(mov => mov > 0)); // false
+//  console.log(account4.movements.every(mov => mov > 0));// true
+
+// creating a separate callback
+const deposit = mov => mov < 0;
+movements.some(deposit);
+movements.every(deposit);
+movements.filter(deposit);
+
+// TOPIC FLAT AND FLATMAP
+const arrFlat = [1, 2, 3, [1, 2, 3], 4, 5, [6, 7]];
+arrFlat.flat();
+const arrFlatDeep = [[1, [2, 3]], 4, 5, [6, [7, [8, 9, 10]]]];
+arrFlatDeep.flat(); // 1, (2) […], 4, 5, 6, (2) […] ]
+arrFlatDeep.flat(2); // [ 1, 2, 3, 4, 5, 6, 7, (3) […] ]
+arrFlatDeep.flat(3); //  [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+
+// Real life  use case of the flat method
+const bankTransactionSum = accounts
+  .map(acc => acc.movements)
+  .flat()
+  .reduce((acc, mov) => acc + mov, 0);
+console.log(bankTransactionSum);
+
+// TOPIC Sorting
+// The sort method does the sorting based on string
+// On Strings
+const owners = [`Jonas`, `Zach`, `Adam`, `Obi`];
+owners.sort(); // [ "Adam", "Jonas", "Obi", "Zach" ]
+//On Numbers
+const num = [200, 450, -400, 3000, -650, -130, 70, 1300];
+// num.sort(); // [-130, -400, -650, 1300, 200, 3000, 450, 70 ]
+
+// [N/B] In sorting (positive & negative values has there functions)
+// When Positive      (switch Position)
+// when Negative or 0 (Keep Position)
+
+// Using this theory we have that 👇🏽
+// assuming that a & b are consecutive Numbers
+// if (a) is grater than (b) then (a-b) is something positive
+// if (a) is less than (b) then (a-b) is something negative
+
+// return < 0, A,B (keep order(when returned less than 0))
+// return > 0, B,A (switch order(when grater than 1))
+
+// Ascending order
+// num.sort((a, b) => {
+//   if (a > b) return 1;
+//   if (a < b) return -1;
+// });
+//👆🏽 Improved and better code
+num.sort((a, b) => a - b);
+//  [ 200, 450, -400, 3000, -650, -130, 70, 1300 ]
+// console.log(num); // [ -650, -400, -130, 70, 200, 450, 1300, 3000 ]
+
+//🧿🧿🧿
+// illustration of (a-b)
+// [ 200, 450, -400, 3000, -650]
+200 - 450; // - [ 200, 450, -400, 3000,-650]
+200 - -400; // + [-400, 200, 450, 3000,-650]
+200 - 3000; // - [-400, 200, 450, 3000,-650]
+200 -
+  3000 - // -[-400, 200, 450, 3000,-650]
+  400 -
+  -650; // + [-650, -400, 200, 450, 3000]
+// [-650,-400, 200, 450, 3000]
+//🧿🧿🧿
+
+//Descending order
+// num.sort((a, b) => {
+//   if (a > b) return -1;
+//   if (a < b) return 1;
+// });
+num.sort((a, b) => b - a);
+console.log(num); // [ 3000, 1300, 450, 200, 70, -130, -400, -650 ]
+
+// TOPIC CRATE ARRAY AND FILL ARRAY
+const x = new Array(7);
+console.log(x);
+const fill = x.fill(3);
+// console.log(fill); // [ 3, 3, 3, 3, 3, 3, 3 ]
+const fillSet = x.fill(2, 2, 5);
+// console.log(fillSet); // [ 3, 3, 2, 2, 2, 3, 3 ]
+
+// Underscore is used to present array parameter that will not be needed
+const from = Array.from({ length: 30 }, (_, i) => i + 1);
+// console.log(from);// [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, … ]
+
+const randomDice = Array.from({ length: 100 }, (value, i) =>
+  Math.trunc(Math.random(value) * 6 + 1)
+);
+// console.log(randomDice);
+
+// Array.forth(); can be use to convert iterables to arrays
+// and also the a NodeList to array e.g (querySelectorAll)
+labelBalance.addEventListener(`click`, function () {
+  const movementsUI = Array.from(
+    document.querySelectorAll(`.movements__value`), // First argument 
+    el => Number(el.textContent.replace(`€`, ``)) // Function / second argument
+  );
+  
+//  console.log(movementsUI.map(el =>  Number(el.textContent.replace(`€`, ``))));
+  console.log(movementsUI);
+});
+
+/*
+Coding Challenge #4
+Julia and Kate are still studying dogs, and this time they are studying if dogs are
+eating too much or too little.
+Eating too much means the dog's current food portion is larger than the
+recommended portion, and eating too little is the opposite.
+Eating an okay amount means the dog's current food portion is within a range 10%,
+above and 10% below the recommended portion (see hint).
+Your tasks:
+1. Loop over the 'dogs' array containing dog objects, and for each dog, calculate
+the recommended food portion and add it to the object as a new property. Do
+not create a new array, simply loop over the array. Formula: 
+recommendedFood = weight ** 0.75 * 28. (The result is in grams of
+food, and the weight needs to be in kg)
+2. Find Sarah's dog and log to the console whether it's eating too much or too
+little. Hint: Some dogs have multiple owners, so you first need to find Sarah in
+the owners array, and so this one is a bit tricky (on purpose) 🤓
+3. Create an array containing all owners of dogs who eat too much
+('ownersEatTooMuch') and an array with all owners of dogs who eat too little
+('ownersEatTooLittle').
+4. Log a string to the console for each array created in 3., like this: "Matilda and
+Alice and Bob's dogs eat too much!" and "Sarah and John and Michael's dogs eat
+too little!"
+5. Log to the console whether there is any dog eating exactly the amount of food
+that is recommended (just true or false)
+6. Log to the console whether there is any dog eating an okay amount of food
+(just true or false)
+7. Create an array containing the dogs that are eating an okay amount of food (try
+to reuse the condition used in 6.)
+8. Create a shallow copy of the 'dogs' array and sort it by recommended food
+portion in an ascending order (keep in mind that the portions are inside the
+array's objects 😉)
+Hints:
+§ Use many different tools to solve these challenges, you can use the summary
+lecture to choose between them 😉
+§ Being within a range 10% above and below the recommended portion means:
+current > (recommended * 0.90) && current < (recommended *
+1.10). Basically, the current portion should be between 90% and 110% of the
+recommended portion.
+Test data:
+const dogs = [
+{ weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+{ weight: 8, curFood: 200, owners: ['Matilda'] },
+{ weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
+{ weight: 32, curFood: 340, owners: ['Michael'] },
+];
+GOOD LUCK 😀
+*/
+
+/*
+1. Loop over the 'dogs' array containing dog objects, and for each dog, calculate
+the recommended food portion and add it to the object as a new property. Do
+not create a new array, simply loop over the array. Formula: 
+recommendedFood = weight ** 0.75 * 28. (The result is in grams of
+food, and the weight needs to be in kg)
+*/
+
+// SOLUTION
