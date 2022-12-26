@@ -183,6 +183,7 @@ btnTransfer.addEventListener(`click`, function (e) {
   const receiverAcct = accounts.find(
     acc => acc.userName === inputTransferTo.value
   );
+  console.log(receiverAcct);
   console.log(amountTransferred, receiverAcct?.userName, receiverAcct);
   inputTransferAmount.value = inputTransferTo.value = ``;
 
@@ -239,7 +240,7 @@ btnClose.addEventListener(`click`, function (e) {
 
 let sorted = false;
 btnSort.addEventListener(`click`, function (e) {
-  e.preventDefault();
+  e.preventDefault();s
   display(currentAccount.movements, !sorted);
   sorted = !sorted;
   // console.log(currentAccount.movements);
@@ -562,7 +563,7 @@ const num = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 // Using this theory we have that 👇🏽
 // assuming that a & b are consecutive Numbers
-// if (a) is grater than (b) then (a-b) is something positive
+// if [a,b](a) is grater than (b) then (a-b) is something positive = [b,a]
 // if (a) is less than (b) then (a-b) is something negative
 
 // return < 0, A,B (keep order(when returned less than 0))
@@ -620,11 +621,11 @@ const randomDice = Array.from({ length: 100 }, (value, i) =>
 // and also the a NodeList to array e.g (querySelectorAll)
 labelBalance.addEventListener(`click`, function () {
   const movementsUI = Array.from(
-    document.querySelectorAll(`.movements__value`), // First argument 
+    document.querySelectorAll(`.movements__value`), // First argument
     el => Number(el.textContent.replace(`€`, ``)) // Function / second argument
   );
-  
-//  console.log(movementsUI.map(el =>  Number(el.textContent.replace(`€`, ``))));
+
+  //  console.log(movementsUI.map(el =>  Number(el.textContent.replace(`€`, ``))));
   console.log(movementsUI);
 });
 
@@ -676,13 +677,124 @@ const dogs = [
 ];
 GOOD LUCK 😀
 */
+const dogs = [
+  { weight: 22, curFood: 250, owners: ['Alice', 'Bob'] },
+  { weight: 8, curFood: 200, owners: ['Matilda'] },
+  { weight: 13, curFood: 275, owners: ['Sarah', 'John'] },
+  { weight: 32, curFood: 340, owners: ['Michael'] },
+  { weight: 32, curFood: 376, owners: ['Johnnie'] },
+];
+let recommendedFood;
+let recommended;
+// SOLUTION 1
+//1, The array Method needed will only perform an action and not return a value
+//2. create add the
+console.log();
+dogs.forEach(function (el) {
+  const value = el.weight;
+  el.recommendedFood = `${Number(Math.trunc(value ** 0.75 * 28))}kg`;
+  // console.log( );
+  // SOLUTION 2
+  // 1. this will need a boolean in order to to confirm the owner is Sarah
+  // 2.
+  // const finder = dogs.find(el => el.owners.flat() === 'Sarah`
+  // const finder = dogs.owners.include('Sarah')
+  // dogs.includes
+  if (el.owners.includes('Sarah')) {
+    let recommended = Number(el.recommendedFood.replace(`kg`, ''));
+    const determiner =
+      el.curFood > recommended * 0.9 && el.curFood < recommended * 1.1
+        ? `is eating too much`
+        : `is eating too Little`;
+    console.log(`${el.owners[0]}'s dog ${determiner}`);
+  }
+});
+//SOLUTION 3
+// 1.Map out the array object
+// 2. eat
+// 3. filter the calculated eating
+//-for little and eat large in diff.arrays
+//  const rcFood = Number(el.recommendedFood.replace(`kg`, ''));
+//  const little = el.curFood > rcFood * 0.9 && el.curFood < rcFood * 1.1;
+//   const ownersEatTooMuch =el.map(el=> el === little)
+//   console.log(ownersEatTooMuch);
+const ownersEatTooMuch = dogs.filter(
+  el => el.curFood > Number(el.recommendedFood.replace(`kg`, ''))
+);
+const ownersEatTooLittle = dogs.filter(
+  el => el.curFood < Number(el.recommendedFood.replace(`kg`, ''))
+);
+const normal = dogs.filter(
+  el => el.curFood === Number(el.recommendedFood.replace(`kg`, ''))
+);
+console.log(ownersEatTooMuch, ownersEatTooLittle);
 
+// SOLUTION 4
+const state = ownersEatTooLittle ? `dogs eat too much!` : null;
+const logger = function (obj) {
+  obj.forEach(el => {
+    const statement =
+      el.curFood > Number(el.recommendedFood.replace(`kg`, ''))
+        ? `Eat Too Much`
+        : `Eat Too Little`;
+    // console.log(el.owners.join(` , `).replace(`,`, `and`));
+    const stringPrint = `${el.owners
+      .join(` , `)
+      .replace(`,`, `and`)} dogs ${statement}`;
+    // console.log(stringPrint);
+  });
+
+  //SOLUTION 5
+  // if(obj ){
+  //   // console.log(`Hello`);
+  // }else{
+  //   // console.log(`Nope`);
+  // }
+};
+
+logger(ownersEatTooMuch);
+logger(ownersEatTooLittle);
+logger(normal);
+
+// console.log(dogs);
+
+const sameAmount = dogs
+  .map(el => el)
+  .some(el => el.curFood === Number(el.recommendedFood.replace(`kg`, '')))
+  ? true
+  : false;
+console.log(sameAmount);
+
+// SOLUTION 6
+const okayAmount = dogs.map(
+  el =>
+    el.curFood > Number(el.recommendedFood.replace(`kg`, '')) * 0.9 &&
+    el.curFood < Number(el.recommendedFood.replace(`kg`, '')) * 1.1
+);
+console.log(okayAmount);
+// console.log();
+
+// SOLUTION 7
+const arrFilter = dogs.filter(
+  el =>
+    el.curFood > Number(el.recommendedFood.replace(`kg`, '')) * 0.9 &&
+    el.curFood < Number(el.recommendedFood.replace(`kg`, '')) * 1.1
+);
+
+console.log(arrFilter);
+// SOLUTION 8 
 /*
-1. Loop over the 'dogs' array containing dog objects, and for each dog, calculate
-the recommended food portion and add it to the object as a new property. Do
-not create a new array, simply loop over the array. Formula: 
-recommendedFood = weight ** 0.75 * 28. (The result is in grams of
-food, and the weight needs to be in kg)
+8. Create a shallow copy of the 'dogs' array and sort it by recommended food
+portion in an ascending order (keep in mind that the portions are inside the
+array's objects 😉)
 */
+let copyRp;
+const newDogs = dogs.slice()
 
-// SOLUTION
+newDogs.sort((a, b)=>{
+if(a.recommendedFood.replace(`kg`, '') > b.recommendedFood.replace(`kg`, '')){
+  return 1
+}
+})
+
+console.log(newDogs);
