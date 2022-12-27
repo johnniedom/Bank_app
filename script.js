@@ -240,7 +240,8 @@ btnClose.addEventListener(`click`, function (e) {
 
 let sorted = false;
 btnSort.addEventListener(`click`, function (e) {
-  e.preventDefault();s
+  e.preventDefault();
+  s;
   display(currentAccount.movements, !sorted);
   sorted = !sorted;
   // console.log(currentAccount.movements);
@@ -691,8 +692,7 @@ let recommended;
 //2. create add the
 console.log();
 dogs.forEach(function (el) {
-  const value = el.weight;
-  el.recommendedFood = `${Number(Math.trunc(value ** 0.75 * 28))}kg`;
+  el.recommendedFood = `${Number(Math.trunc(el.weight ** 0.75 * 28))}kg`;
   // console.log( );
   // SOLUTION 2
   // 1. this will need a boolean in order to to confirm the owner is Sarah
@@ -703,17 +703,14 @@ dogs.forEach(function (el) {
   if (el.owners.includes('Sarah')) {
     let recommended = Number(el.recommendedFood.replace(`kg`, ''));
     const determiner =
-      el.curFood > recommended * 0.9 && el.curFood < recommended * 1.1
-        ? `is eating too much`
-        : `is eating too Little`;
+      el.curFood > recommended ? `is eating too much` : `is eating too Little`;
     console.log(`${el.owners[0]}'s dog ${determiner}`);
   }
 });
 //SOLUTION 3
-// 1.Map out the array object
-// 2. eat
-// 3. filter the calculated eating
+// 1. filter the calculated eating
 //-for little and eat large in diff.arrays
+// 2. Map out the array object
 //  const rcFood = Number(el.recommendedFood.replace(`kg`, ''));
 //  const little = el.curFood > rcFood * 0.9 && el.curFood < rcFood * 1.1;
 //   const ownersEatTooMuch =el.map(el=> el === little)
@@ -721,6 +718,8 @@ dogs.forEach(function (el) {
 const ownersEatTooMuch = dogs.filter(
   el => el.curFood > Number(el.recommendedFood.replace(`kg`, ''))
 );
+console.log(ownersEatTooMuch);
+console.log(ownersEatTooMuch);
 const ownersEatTooLittle = dogs.filter(
   el => el.curFood < Number(el.recommendedFood.replace(`kg`, ''))
 );
@@ -758,43 +757,42 @@ logger(normal);
 
 // console.log(dogs);
 
-const sameAmount = dogs
-  .map(el => el)
-  .some(el => el.curFood === Number(el.recommendedFood.replace(`kg`, '')))
+const sameAmount = dogs.some(
+  el => el.curFood === Number(el.recommendedFood.replace(`kg`, ''))
+)
   ? true
   : false;
-console.log(sameAmount);
+// console.log(sameAmount);
 
 // SOLUTION 6
-const okayAmount = dogs.map(
+const anyAmount =
   el =>
     el.curFood > Number(el.recommendedFood.replace(`kg`, '')) * 0.9 &&
     el.curFood < Number(el.recommendedFood.replace(`kg`, '')) * 1.1
-);
+;
+const okayAmount = dogs.some(anyAmount);
 console.log(okayAmount);
 // console.log();
 
 // SOLUTION 7
-const arrFilter = dogs.filter(
-  el =>
-    el.curFood > Number(el.recommendedFood.replace(`kg`, '')) * 0.9 &&
-    el.curFood < Number(el.recommendedFood.replace(`kg`, '')) * 1.1
-);
+const arrFilter = dogs.filter(anyAmount).map(el => el);
 
-console.log(arrFilter);
-// SOLUTION 8 
+// console.log(arrFilter); 
+// SOLUTION 8  
 /*
 8. Create a shallow copy of the 'dogs' array and sort it by recommended food
 portion in an ascending order (keep in mind that the portions are inside the
 array's objects 😉)
 */
 let copyRp;
-const newDogs = dogs.slice()
+const newDogs = dogs.slice();
 
-newDogs.sort((a, b)=>{
-if(a.recommendedFood.replace(`kg`, '') > b.recommendedFood.replace(`kg`, '')){
-  return 1
-}
-})
+newDogs.sort((a, b) => {
+  if (
+    a.recommendedFood.replace(`kg`, '') - b.recommendedFood.replace(`kg`, '')
+  ) {
+    return 1;
+  }
+});
 
-console.log(newDogs);
+// console.log(newDogs);
