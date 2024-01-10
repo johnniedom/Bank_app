@@ -34,7 +34,7 @@ const account4 = {
 };
 const account5 = {
   owner: 'Johnnie Modebe Chukwudi',
-  movements: [1000, 700, 50, -900, 7000, 7400, -790, -300],
+  movements: [10000, 700, 50, -900, 7000, 160400, -790, -300],
   interestRate: 1.5,
   pin: 5555,
 };
@@ -100,10 +100,13 @@ const calPrintBalance = function (acc) {
 };
 
 // 👆🏽 this on a function
+
+// TOPIC power of chaining
 const createUserName = function (acct) {
+  console.log(acct.length);
   acct.forEach(function (acc) {
-    // console.log(acc.owner);
-    acc.userName = acc.owner
+    const { owner } = acc;
+    acc.userName = owner
       .toLowerCase()
       .split(` `)
       .map(us => us[0])
@@ -112,8 +115,8 @@ const createUserName = function (acct) {
 };
 createUserName(accounts);
 
-// TOPIC power of chaining
 const calDisplayBalance = function (acc) {
+  console.log(acc);
   const depositSummary = acc.movements
     .filter(money => money > 0)
     .reduce((acc, money) => acc + money, 0);
@@ -133,7 +136,6 @@ const calDisplayBalance = function (acc) {
   // console.log(interest, acc.movements);
 };
 
-// console.log(createUserName(accounts));
 /*
 const createUserName = function (userName) {
   return userName
@@ -146,6 +148,7 @@ const createUserName = function (userName) {
 // console.log(accounts);
 const updateUI = function (currentAccount) {
   //Display balance
+  console.log(currentAccount);
   calPrintBalance(currentAccount);
   console.log(currentAccount);
   //Display movements
@@ -162,7 +165,8 @@ btnLogin.addEventListener(`click`, function (e) {
     (acc, i, arr) => acc.userName === inputLoginUsername.value
   );
   console.log(currentAccount);
-  if (currentAccount?.pin === Number(inputLoginPin.value)) {
+  if (currentAccount?.pin === +inputLoginPin.value) {
+    // or currentAccount?.pin === Number(inputLoginPin.value)
     // LOGIN IN AND PIN
     inputLoginUsername.value = inputLoginPin.value = ``;
     inputLoginPin.blur();
@@ -183,9 +187,12 @@ btnTransfer.addEventListener(`click`, function (e) {
   const receiverAcct = accounts.find(
     acc => acc.userName === inputTransferTo.value
   );
-  console.log(receiverAcct);
+
   console.log(amountTransferred, receiverAcct?.userName, receiverAcct);
   inputTransferAmount.value = inputTransferTo.value = ``;
+
+  if (receiverAcct) console.log(receiverAcct);
+  else alert(`user does not exist`);
 
   if (
     amountTransferred > 0 &&
@@ -205,9 +212,13 @@ btnTransfer.addEventListener(`click`, function (e) {
 // 10% of the requested loan amount
 btnLoan.addEventListener(`click`, function (e) {
   e.preventDefault();
-  const amount = Number(inputLoanAmount.value);
-  if (amount > 0 && currentAccount.movements.some(mov => mov >= amount * 0.1)) {
-    // console.log(`walker`);
+  const amount = +inputLoanAmount.value;
+  console.log(amount);
+  // checking if the user has done any transaction that >= 75%
+  if (
+    amount > 0 &&
+    currentAccount.movements.some(mov => mov >= amount * 0.75)
+  ) {
     // proceed loan
     currentAccount.movements.push(amount);
     // update ui
@@ -220,10 +231,10 @@ btnClose.addEventListener(`click`, function (e) {
   e.preventDefault();
   // console.log(currentAccount.userName);
   if (
-    currentAccount.userName === inputCloseUsername.value &&
-    currentAccount.pin === Number(inputClosePin.value)
+    currentAccount[userName] === inputCloseUsername.value &&
+    currentAccount[pin] === Number(inputClosePin.value)
   ) {
-    console.log(`logout`);
+    // console.log(`logout`);
     const index = accounts.findIndex(
       acc => acc.userName === currentAccount.userName
     );
@@ -249,7 +260,7 @@ btnSort.addEventListener(`click`, function (e) {
 //////////////////////////
 ///////////////////////
 /////////////////////////////////////////////////
-// LECTURES
+// LEC
 
 // const currencies = new Map([
 //   ['USD', 'United States dollar'],
@@ -270,8 +281,8 @@ arr.slice(2, 4); // this will return new copy of arr  [`c`, `b`]
 // Splice method
 // it is similar to slice method but the fundamental diff. is that it mutate
 //the original array
-arr.splice(2); //  [`c`, `b`, `e`] delete or mutate
-arr.splice(-1); // [`b `]
+// arr.splice(2); //  [`c`, `b`, `e`] delete or mutate
+// arr.splice(-1); // [`b `]
 arr; // [`a`, `b`] it  changes the original array
 // it can take two of arguments like the Slice
 // where first where to start from and No. of items to del e.g 👇🏽
@@ -336,17 +347,19 @@ const currencies = new Map([
 ]);
 currencies.forEach(function (value, key, map) {
   // console.log(`${key}: ${value}`);
+  // console.log(map);
 });
 
 // On Sets
 const uniqueCurrencies = new Set([`USD`, `NGA`, `USD`, `EUR`, `PUN`, `NGA`]);
 uniqueCurrencies.forEach(function (value, key, set) {
-  // console.log(`${key}: ${value}`);
+  console.log(`${key}: ${value}`);
+  // console.log(set);// set{`USD`, `NGA`, `USD`, `EUR`, `PUN`, `NGA`}
 });
 ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////
 /*
-Coding Challenge #1
+Coding CHALLENGE #1
 Julia and Kate are doing a study on dogs. So each of them asked 5 dog owners
 about their dog's age, and stored the data into an array (one array for each). For
 now, they are just interested in knowing whether a dog is an adult or a puppy.
@@ -373,14 +386,14 @@ GOOD LUCK 😀
  */
 // SOLUTION
 const checkDogs = function (dogsJulia, dogsKate) {
-  const realDogs = [...dogsJulia.slice(1, -2), ...dogsKate];
+  const realDogs = [...dogsJulia.slice(1, -1), ...dogsKate];
   console.log(realDogs);
   realDogs.forEach(function (dog, i) {
     const age = dog > 3 ? `an Adult` : `a Puppy`;
     console.log(`Dog number ${i + 1} is ${age}, and is ${dog} years old`);
   });
 };
-// checkDogs([3, 5, 2, 12, 7], [4, 1, 15, 8, 3]);
+checkDogs([3, 5, 2, 12, 7], [4, 1, 15, 8, 3]);
 // checkDogs([9, 16, 6, 8, 3],  [10, 5, 6, 1, 4]);
 
 // TOPIC DATA TRANSFORMATION
@@ -402,23 +415,25 @@ const eurToUsd = euros.map(function (usd, i) {
 const euroToUSD = euros.map(euro => euro * rate);
 // console.log(euroToUSD);
 
-const alert = euros.map(
+const storeMap = euros.map(
   (mov, i, arr) =>
     `Move ${i + 1}: You ${mov > 0 ? `deposited` : `You withdraw`} ${Math.abs(
       mov
     )}`
 );
+// console.log(storeMap);
+// console.log(typeof []); // `object`
 
-// console.log(...alert);
 // TOPIC FILTER
-const deposits = euros.filter(mon => mon > 0);
-// console.log(deposits);
-// Using the (For of) to do the same thing
+const deposits = euros.filter(mon => mon > 100);
+// console.log(deposits);// [200, 450, 3000, 1300]
+
+//👇🏽 Using the (For of) to do the same thing
 const depositsFor = [];
 for (const euro of euros) {
-  if (euro > 0) depositsFor.push(euro);
+  if (euro > 100) depositsFor.push(euro);
 }
-//  console.log(depositsFor);
+ console.log(depositsFor); ;// [200, 450, 3000, 1300]
 // arrays of withdrawals
 const withdrawals = euros.filter(mon => mon < 0);
 // console.log(withdrawals);
@@ -765,11 +780,9 @@ const sameAmount = dogs.some(
 // console.log(sameAmount);
 
 // SOLUTION 6
-const anyAmount =
-  el =>
-    el.curFood > Number(el.recommendedFood.replace(`kg`, '')) * 0.9 &&
-    el.curFood < Number(el.recommendedFood.replace(`kg`, '')) * 1.1
-;
+const anyAmount = el =>
+  el.curFood > Number(el.recommendedFood.replace(`kg`, '')) * 0.9 &&
+  el.curFood < Number(el.recommendedFood.replace(`kg`, '')) * 1.1;
 const okayAmount = dogs.some(anyAmount);
 console.log(okayAmount);
 // console.log();
@@ -777,8 +790,8 @@ console.log(okayAmount);
 // SOLUTION 7
 const arrFilter = dogs.filter(anyAmount).map(el => el);
 
-// console.log(arrFilter); 
-// SOLUTION 8  
+// console.log(arrFilter);
+// SOLUTION 8
 /*
 8. Create a shallow copy of the 'dogs' array and sort it by recommended food
 portion in an ascending order (keep in mind that the portions are inside the
