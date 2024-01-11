@@ -433,7 +433,7 @@ const depositsFor = [];
 for (const euro of euros) {
   if (euro > 100) depositsFor.push(euro);
 }
- console.log(depositsFor); ;// [200, 450, 3000, 1300]
+console.log(depositsFor); // [200, 450, 3000, 1300]
 // arrays of withdrawals
 const withdrawals = euros.filter(mon => mon < 0);
 // console.log(withdrawals);
@@ -441,6 +441,8 @@ const withdrawals = euros.filter(mon => mon < 0);
 // TOPIC Reduce Methods
 //[N/B] The first parameter in the reduce method is the Accumulator
 // the last element separated by a comma is the initial value of the accumulator
+// N/B THE REDUCE METHOD DOES NOT RETURN A NEW ARRAY AND TAKE TWO PARAMETERS
+// THE ACCUMULATOR, CURRENT VALUE, INDEX, ARRAY AND THE INITIAL VALUE OF THE ACCUMULATOR
 const balance = euros.reduce(function (acc, value, index, arrays) {
   return acc + value;
 }, 0);
@@ -480,11 +482,16 @@ const calcAverageHumanAgeAndAvg = ages => {
     }
   });
   const filter = arrayOfAge.filter(adult => adult >= 18);
+  console.log(filter);
+  const mapOutDog = arrayOfAge.map(
+    (adult, i) => adult >= 18 && `dog ${i + 1} is ${adult}`
+  );
+  console.log(mapOutDog);
   const reducers = filter.reduce(
     (acc, age, i, arr) => acc + age / arr.length,
     0
   );
-  return reducers;
+  return Math.floor(reducers);
 };
 const avg1 = calcAverageHumanAgeAndAvg([5, 2, 4, 1, 15, 8, 3]);
 const avg2 = calcAverageHumanAgeAndAvg([16, 6, 10, 5, 6, 1, 4]);
@@ -522,24 +529,55 @@ const calcAverageHumanAge = age =>
 
 const tAVg = calcAverageHumanAge([5, 2, 4, 1, 15, 8, 3]);
 const tAVg2 = calcAverageHumanAge([16, 6, 10, 5, 6, 1, 4]);
+
 // console.log(tAVg, tAVg2);
 
 // TOPIC THE FIND METHOD
-const firstWithdrawal = movements.find(mov => mov < 0);
-// console.log(firstWithdrawal);
+// THE FIND METHOD IS USED TO FIND A SINGLE ELEMENT IN AN ARRAY
+//THAT MEETS A CERTAIN CONDITION AND RETURNS THE FIRST ELEMENT
+//THAT MEETS THE CONDITION AND NOT THE WHOLE ARRAY LIKE THE FILTER METHOD
+//BUT SIMILAR TO THE SOME METHOD
 
-const account = accounts.find(acc => acc.owner === `Johnnie Modebe Chukwudi`);
+/**
+TABLE OF DIFFERENCE BETWEEN THE FIND AND THE FILTER METHOD
+              FIND METHOD  |  FILTER METHOD
+
+ RETURNS THE FIRST ELEMENT THAT MEETS THE CONDITION - 
+ | - RETURNS THE WHOLE ARRAY THAT MEETS THE CONDITION
+ RETURNS THE ELEMENT ITSELF - | - RETURNS THE CONDITION
+ RETURNS THE INDEX OF THE ELEMENT - | 
+- RETURNS THE INDEX OF THE ELEMENT IN THE ARRAY THAT MEETS THE CONDITION
+ RETURNS THE ARRAY ITEM - | - RETURNS THE ARRAY ITSELF (THE WHOLE ARRAY)
+ */
+
+const allWithDrawal = [-20, -200, -399, 200, 300];
+const firstWithdrawal = allWithDrawal.find(mov => mov < 0);
+console.log(firstWithdrawal);
+
+const account = accounts.find(
+  acc => acc?.userName === `jmc` || acc.userName?.startsWith('j')
+);
+// console.log(account); // {…}
 // CHALLENGE Doing the same thing with the (For loop)
-let accOwner = ``;
+// THIS MY OWN VERSION OF THE FIND METHOD USING THE FOR LOOP
+let accOwner;
 for (const account of accounts) {
-  if (account.owner === `Johnnie Modebe Chukwudi`) {
-    // accOwner + account.owner/
-    // console.log( account, account.owner);
+  if (account?.userName?.endsWith(`mc`)) {
+    accOwner = account;
   }
 }
 
+// console.log(accOwner);
+// TOPIC THE SOME METHOD
+// THE SOME METHOD IS USED TO CHECK IF THERE IS ANY ELEMENT IN THE ARRAY
+// THAT MEETS A CERTAIN CONDITION AND RETURNS A BOOLEAN
+// console.log(account);
+const anyDeposits = allWithDrawal.some(mov => mov > 0);
+// console.log(anyDeposits); //true
+
 // TOPIC The every Method
 // the every method is similar to the some method
+//
 //  console.log(movements.every(mov => mov > 0)); // false
 //  console.log(account4.movements.every(mov => mov > 0));// true
 
@@ -552,88 +590,161 @@ movements.filter(deposit);
 // TOPIC FLAT AND FLATMAP
 const arrFlat = [1, 2, 3, [1, 2, 3], 4, 5, [6, 7]];
 arrFlat.flat();
-const arrFlatDeep = [[1, [2, 3]], 4, 5, [6, [7, [8, 9, 10]]]];
+const arrFlatDeep = [[1, [2, 3]], 4, 5, [6, [7, [8, [9, 10]]]]];
 arrFlatDeep.flat(); // 1, (2) […], 4, 5, 6, (2) […] ]
-arrFlatDeep.flat(2); // [ 1, 2, 3, 4, 5, 6, 7, (3) […] ]
-arrFlatDeep.flat(3); //  [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+// arrFlatDeep.flat(2); // [ 1, 2, 3, 4, 5, 6, 7, (3) […] ]
+arrFlatDeep.flat(3); //  [ 1, 2, 3, 4, 5, 6, 7, 8, [9, 10] ]
+arrFlatDeep.flat(4); //  [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+console.log(arrFlatDeep.flat(Infinity)); // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+// THE FLAT METHOD CAN BE USED TO FLATTEN AN ARRAY OF ARRAY
+// THE INFINITY IS USED TO FLATTEN AN ARRAY OF ANY DEPTH
+// FLATMAP METHOD IS USED TO FLATTEN AN
+// ARRAY OF ARRAY AND ALSO MAP OVER IT FOR EXAMPLE
+const accountMovements = accounts.map(acc => acc.movements).flat(Infinity);
+// console.log(accountMovements); // [ 200, 450, -400, 3000, -650, -130, 70, 1300, … ]
 
 // Real life  use case of the flat method
 const bankTransactionSum = accounts
   .map(acc => acc.movements)
   .flat()
   .reduce((acc, mov) => acc + mov, 0);
-console.log(bankTransactionSum);
+// console.log(bankTransactionSum);
 
 // TOPIC Sorting
+/**
+ * 
+`sort()` method is used to sort arrays in JavaScript.
+ It arranges the elements in ascending order by default,
+but when sorting numbers, it treats them as strings,
+ which can lead to unexpected results.
+ * @johnniedom 
+ * for more explanation on the
+ * sort method check this file below
+ * @file {sortMethod.md}  - This file contains a sorting method explanation.
+* @link {sortMethod.md } 
+* 
+
+*/
 // The sort method does the sorting based on string
 // On Strings
 const owners = [`Jonas`, `Zach`, `Adam`, `Obi`];
 owners.sort(); // [ "Adam", "Jonas", "Obi", "Zach" ]
+// console.log(owners); // [ "Adam", "Jonas", "Obi", "Zach"]
+
 //On Numbers
-const num = [200, 450, -400, 3000, -650, -130, 70, 1300];
+
+const num = [200, 450, -400, 3000, -650, -130, 70, 1300, 34, 35];
+num.sort((a, b) => {
+  console.log(a - b);
+  console.log(b - a);
+  console.log(a);
+  console.log(b);
+
+  a - b;
+}); // [-130, -400, -650, 1300, 200, 3000, 450, 70 ]
 // num.sort(); // [-130, -400, -650, 1300, 200, 3000, 450, 70 ]
+console.log(num); // [-130, -400, -650, 1300, 200, 3000, 450, 70 ]
 
 // [N/B] In sorting (positive & negative values has there functions)
 // When Positive      (switch Position)
 // when Negative or 0 (Keep Position)
+// (200 - 450); // -250 (negative) this will switch position
+// (450 - 200); // 250 (positive) this will keep position
+// (200 - 200); // 0 (zero) this will keep position
+// (200 - -200); // 400 (positive) this will switch position
 
 // Using this theory we have that 👇🏽
 // assuming that a & b are consecutive Numbers
-// if [a,b](a) is grater than (b) then (a-b) is something positive = [b,a]
-// if (a) is less than (b) then (a-b) is something negative
+// if [b,a](a) is grater than (b) then (a-b) is something positive = [a,b] (switch order)
+// if (a) is less than (b) then (b - a ) is something negative = [a,b] (keep order)
+// if (a) is equal to (b) then (a - b) or (b - a) is zero = [a,b] (keep order)
 
-// return < 0, A,B (keep order(when returned less than 0))
-// return > 0, B,A (switch order(when grater than 1))
+// return > 0, A,B (switch order(when grater than 1))
+// return <= 0, B,A (keep order(when returned less than 0))
 
-// Ascending order
+// Ascending  for numbers (a-b)
 // num.sort((a, b) => {
 //   if (a > b) return 1;
 //   if (a < b) return -1;
 // });
-//👆🏽 Improved and better code
-num.sort((a, b) => a - b);
-//  [ 200, 450, -400, 3000, -650, -130, 70, 1300 ]
-// console.log(num); // [ -650, -400, -130, 70, 200, 450, 1300, 3000 ]
 
-//🧿🧿🧿
-// illustration of (a-b)
-// [ 200, 450, -400, 3000, -650]
-200 - 450; // - [ 200, 450, -400, 3000,-650]
-200 - -400; // + [-400, 200, 450, 3000,-650]
-200 - 3000; // - [-400, 200, 450, 3000,-650]
-200 -
-  3000 - // -[-400, 200, 450, 3000,-650]
-  400 -
-  -650; // + [-650, -400, 200, 450, 3000]
-// [-650,-400, 200, 450, 3000]
-//🧿🧿🧿
+//👆🏽 Improved and better code
+// num.sort((a, b) => a - b);
+//  [ 200, 450, -400, 3000, -650, -130, 70, 1300 ]
+console.log(num); // [ -650, -400, -130, 70, 200, 450, 1300, 3000 ]
 
 //Descending order
 // num.sort((a, b) => {
 //   if (a > b) return -1;
 //   if (a < b) return 1;
 // });
+//N.B THE SORT METHOD MUTATE THE ORIGINAL ARRAY
 num.sort((a, b) => b - a);
-console.log(num); // [ 3000, 1300, 450, 200, 70, -130, -400, -650 ]
+// console.log(num); // [ 3000, 1300, 450, 200, 70, -130, -400, -650 ]
 
 // TOPIC CRATE ARRAY AND FILL ARRAY
+
+//  THE NEW ARRAY METHOD IS USED TO CREATE A NEW ARRAY
+// E.G (new Array(7)) will create an array of 7 empty elements
+// HOW THE FILL METHOD WORKS
+//  THE FILL METHOD IS USED TO FILL AN ARRAY WITH A CERTAIN VALUE
+// THE FIRST ARGUMENT IS THE VALUE TO BE FILLED
+// THEN THE SECOND ARGUMENT IS THE STARTING POINT
+// AND THE THIRD ARGUMENT IS THE ENDING POINT
+// THE ENDING POINT IS NOT INCLUDED IN THE FILL METHOD
+// THAT IS WHY IT IS CALLED A HALF OPEN INTERVAL
+// THE FILL METHOD MUTATE THE ORIGINAL ARRAY
+
 const x = new Array(7);
 console.log(x);
-const fill = x.fill(3);
+// const fill = x.fill(3);
 // console.log(fill); // [ 3, 3, 3, 3, 3, 3, 3 ]
-const fillSet = x.fill(2, 2, 5);
-// console.log(fillSet); // [ 3, 3, 2, 2, 2, 3, 3 ]
 
+const fillSet = x.fill(2, 0, -1);
+console.log(fillSet); // [ 2, 2, 2, 2, 2, 2, 2 ]
+
+// THE FROM METHOD IS USED TO CREATE AN ARRAY FROM AN ITERABLE
+// THE FROM METHOD CAN ALSO TAKE A MAP FUNCTION
+// THE FROM METHOD CAN ALSO TAKE A SECOND ARGUMENT THAT IS A MAP FUNCTION
+// THE FROM METHOD CAN ALSO TAKE A THIRD ARGUMENT THAT IS A THIS KEYWORD
+// EXAMPLE WERE three PARAMETERS ARE USED
+const exeObj = {
+  name: `Johnnie`,
+  age: 23,
+  job: `Software Engineer`,
+  present: function (par) {
+    console.log(`Hello ${par}, my name is ${this.name}`);
+  },
+};
+// HOW TO USE THE THIS KEYWORD IN THE FROM METHOD
+// THE THIS KEYWORD IS USED TO REFER TO THE OBJECT
+// HERE THE THIS KEYWORD IS USED TO REFER TO THE exeObj OBJECT
+// TO USE THE THIS KEYWORD IN THE FROM METHOD
+// YOU HAVE TO PASS THE OBJECT AS THE THIRD ARGUMENT
+// AND THEN THE THIS KEYWORD WILL REFER TO THE OBJECT
+// USING THE THIS KEYWORD IN THE FROM METHOD IS OPTIONAL
+// TO ACCESS THE THIS KEYWORD IN THE FROM METHOD YOU HAVE TO USE THE
+// ARROW FUNCTION FOR EXAMPLE :
+const fromCopilot = Array.from(
+  { length: 2 },
+  function (el, i, arr) {
+    console.log(
+      `Hello, my name is ${this.name} and i am ${this.age + i}  years old`
+    );
+  },
+  exeObj
+);
 // Underscore is used to present array parameter that will not be needed
 const from = Array.from({ length: 30 }, (_, i) => i + 1);
 // console.log(from);// [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, … ]
 
 const randomDice = Array.from({ length: 100 }, (value, i) =>
-  Math.trunc(Math.random(value) * 6 + 1)
+  Math.floor(Math.trunc(Math.random(value) * 6 + 1))
 );
-// console.log(randomDice);
+console.log(randomDice);
 
-// Array.forth(); can be use to convert iterables to arrays
+
+// Array.from(); can be use to convert iterables to arrays
 // and also the a NodeList to array e.g (querySelectorAll)
 labelBalance.addEventListener(`click`, function () {
   const movementsUI = Array.from(
