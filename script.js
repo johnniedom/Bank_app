@@ -686,7 +686,11 @@ num.sort((a, b) => b - a);
 
 //  THE NEW ARRAY METHOD IS USED TO CREATE A NEW ARRAY
 // E.G (new Array(7)) will create an array of 7 empty elements
-// HOW THE FILL METHOD WORKS
+
+const x = new Array(7);
+console.log(x);
+
+// HOW THE FILL METHOD WORKS AFTER CREATING AN ARRAY
 //  THE FILL METHOD IS USED TO FILL AN ARRAY WITH A CERTAIN VALUE
 // THE FIRST ARGUMENT IS THE VALUE TO BE FILLED
 // THEN THE SECOND ARGUMENT IS THE STARTING POINT
@@ -694,9 +698,6 @@ num.sort((a, b) => b - a);
 // THE ENDING POINT IS NOT INCLUDED IN THE FILL METHOD
 // THAT IS WHY IT IS CALLED A HALF OPEN INTERVAL
 // THE FILL METHOD MUTATE THE ORIGINAL ARRAY
-
-const x = new Array(7);
-console.log(x);
 // const fill = x.fill(3);
 // console.log(fill); // [ 3, 3, 3, 3, 3, 3, 3 ]
 
@@ -704,9 +705,9 @@ const fillSet = x.fill(2, 0, -1);
 console.log(fillSet); // [ 2, 2, 2, 2, 2, 2, 2 ]
 
 // THE FROM METHOD IS USED TO CREATE AN ARRAY FROM AN ITERABLE
-// THE FROM METHOD CAN ALSO TAKE A MAP FUNCTION
-// THE FROM METHOD CAN ALSO TAKE A SECOND ARGUMENT THAT IS A MAP FUNCTION
-// THE FROM METHOD CAN ALSO TAKE A THIRD ARGUMENT THAT IS A THIS KEYWORD
+// IT CAN ALSO TAKE A MAP FUNCTION
+// IT CAN ALSO TAKE A SECOND ARGUMENT THAT IS A MAP FUNCTION
+// IT CAN ALSO TAKE A THIRD ARGUMENT THAT IS A THIS KEYWORD
 // EXAMPLE WERE three PARAMETERS ARE USED
 const exeObj = {
   name: `Johnnie`,
@@ -742,7 +743,6 @@ const randomDice = Array.from({ length: 100 }, (value, i) =>
   Math.floor(Math.trunc(Math.random(value) * 6 + 1))
 );
 console.log(randomDice);
-
 
 // Array.from(); can be use to convert iterables to arrays
 // and also the a NodeList to array e.g (querySelectorAll)
